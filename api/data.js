@@ -98,37 +98,75 @@ module.exports = async function handler(req, res) {
       return res.json({ success: true, data: rows.map(function(m) { const s = Object.assign({}, m); delete s.password_hash; return s; }) });
     }
 
+    // ─────────────────────────────────────────────────────
+    // PHOTO UPLOAD ENDPOINTS (محسّنة مع تعليقات توضيحية)
+    // ─────────────────────────────────────────────────────
+
     if (action === 'getPendingPhotos') {
+      // الحصول على جميع الصور المعلقة للمراجعة من الإدارة
       const rows = await query('members?photo_status=eq.pending&select=id,full_name,username,photo_pending_url');
       return res.json({ success: true, data: Array.isArray(rows) ? rows : [] });
     }
 
     if (action === 'approvePhoto') {
+      // قبول صورة شخصية معلقة ونقلها من photo_pending_url إلى photo_url
       const rows = await query('members?id=eq.' + b.id + '&select=photo_pending_url');
       if (Array.isArray(rows) && rows.length) {
-        await query('members?id=eq.' + b.id, 'PATCH', { photo_url: rows[0].photo_pending_url, photo_pending_url: null, photo_status: 'approved', photo_last_changed: new Date().toISOString() });
+        await query('members?id=eq.' + b.id, 'PATCH', { 
+          photo_url: rows[0].photo_pending_url,           // نقل الصورة المعلقة إلى الصورة الرسمية
+          photo_pending_url: null,                         // حذف الصورة المعلقة
+          photo_status: 'approved',                        // تحديث الحالة إلى موافق عليه
+          photo_last_changed: new Date().toISOString()    // تسجيل وقت آخر تغيير
+        });
       }
       return res.json({ success: true });
     }
 
     if (action === 'rejectPhoto') {
-      await query('members?id=eq.' + b.id, 'PATCH', { photo_pending_url: null, photo_status: 'none' });
+      // رفض صورة شخصية معلقة وحذفها
+      await query('members?id=eq.' + b.id, 'PATCH', { 
+        photo_pending_url: null,      // حذف الصورة المعلقة
+        photo_status: 'none'          // إعادة الحالة إلى "لا توجد صورة معلقة"
+      });
       return res.json({ success: true });
     }
 
     if (action === 'uploadPhoto') {
+      // رفع صورة شخصية جديدة
+      // التحقق من قيد التحديث (60 يوماً بين كل تحديث)
       const rows = await query('members?id=eq.' + b.id + '&select=photo_last_changed');
       if (Array.isArray(rows) && rows.length && rows[0].photo_last_changed) {
         const diff = (new Date() - new Date(rows[0].photo_last_changed)) / 86400000;
-        if (diff < 60) return res.json({ success: false, error: 'يجب الانتظار ' + Math.ceil(60 - diff) + ' يوماً' });
+        if (diff < 60) return res.json({ success: false, error: 'يجب الانتظار ' + Math.ceil(60 - diff) + ' يوماً قبل تغيير الصورة مجدداً' });
       }
+      
+      // تحويل الصورة من Base64 إلى Buffer
       const buf = Buffer.from(b.imageData.replace(/^data:image\/\w+;base64,/, ''), 'base64');
       const fn = b.id + '_' + Date.now() + '.jpg';
-      const up = await fetch(SB_URL + '/storage/v1/object/avatars/' + fn, { method: 'POST', headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'image/jpeg' }, body: buf });
+      
+      // رفع الصورة إلى Supabase Storage
+      const up = await fetch(SB_URL + '/storage/v1/object/avatars/' + fn, { 
+        method: 'POST', 
+        headers: { 
+          'apikey': SB_KEY, 
+          'Authorization': 'Bearer ' + SB_KEY, 
+          'Content-Type': 'image/jpeg' 
+        }, 
+        body: buf 
+      });
+      
       if (!up.ok) return res.json({ success: false, error: 'فشل رفع الصورة' });
-      await query('members?id=eq.' + b.id, 'PATCH', { photo_pending_url: SB_URL + '/storage/v1/object/public/avatars/' + fn, photo_status: 'pending' });
+      
+      // حفظ معلومات الصورة في قاعدة البيانات مع حالة "معلقة" للموافقة من الإدارة
+      await query('members?id=eq.' + b.id, 'PATCH', { 
+        photo_pending_url: SB_URL + '/storage/v1/object/public/avatars/' + fn,  // رابط الصورة المعلقة
+        photo_status: 'pending'                                                   // حالة الصورة: قيد الانتظار
+      });
+      
       return res.json({ success: true });
     }
+
+    // ─────────────────────────────────────────────────────
 
     if (action === 'getNotes') {
       const rows = await query('admin_notes?member_id=eq.' + req.query.member_id + '&order=created_at.desc');
