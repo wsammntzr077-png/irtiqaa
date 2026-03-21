@@ -199,6 +199,18 @@ module.exports = async function handler(req, res) {
       return res.json({ success: true, data: Array.isArray(rows) ? rows : [] });
     }
 
+    if (action === 'updateCompStatus') {
+      await query('competitions?id=eq.' + b.id, 'PATCH', { status: b.status });
+      return res.json({ success: true });
+    }
+
+    if (action === 'deleteComp') {
+      await query('competition_questions?competition_id=eq.' + b.id, 'DELETE');
+      await query('competition_participants?competition_id=eq.' + b.id, 'DELETE');
+      await query('competitions?id=eq.' + b.id, 'DELETE');
+      return res.json({ success: true });
+    }
+
     if (action === 'hasParticipated') {
       const rows = await query('competition_participants?competition_id=eq.' + req.query.competition_id + '&member_id=eq.' + req.query.member_id + '&select=id,correct_count,total_questions');
       return res.json({ success: true, participated: Array.isArray(rows) && rows.length > 0, data: (Array.isArray(rows) && rows[0]) || null });
