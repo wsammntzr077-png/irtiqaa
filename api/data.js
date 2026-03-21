@@ -61,7 +61,8 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === 'getMembers') {
-      const rows = await query('members?select=*,subscriptions(*)&order=points.desc');
+      // Get all members including pending for admin view
+      const rows = await query('members?role=eq.member&select=*,subscriptions(*)&order=created_at.desc');
       if (!Array.isArray(rows)) return res.json({ success: true, data: [] });
       return res.json({ success: true, data: rows.map(function(m) { const s = Object.assign({}, m); delete s.password_hash; return s; }) });
     }
