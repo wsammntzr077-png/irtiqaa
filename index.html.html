@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>مركز ارتقاء للتنمية المجتمعية</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --primary:#1565C0;
+  --primary-light:#E3F2FD;
+  --primary-dark:#0D47A1;
+  --green:#2E7D32;
+  --green-light:#E8F5E9;
+  --red:#C62828;
+  --red-light:#FFEBEE;
+  --orange:#E65100;
+  --orange-light:#FFF3E0;
+  --white:#FFFFFF;
+  --gray:#F5F5F5;
+  --border:#E0E0E0;
+  --text:#212121;
+  --muted:#757575;
+  --shadow:0 2px 12px rgba(0,0,0,0.10);
+  --radius:14px;
+  --radius-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Tajawal',sans-serif;background:var(--gray);color:var(--text);direction:rtl;min-height:100vh;}
+button{font-family:'Tajawal',sans-serif;cursor:pointer;}
+input,select,textarea{font-family:'Tajawal',sans-serif;}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+
+/* ── LOGIN SCREEN ── */
+#screen-login{background:linear-gradient(135deg,#1565C0 0%,#0D47A1 50%,#1B5E20 100%);display:flex;align-items:center;justify-content:center;padding:1rem;}
+.login-box{background:var(--white);border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.25);text-align:center;}
+.login-logo{width:80px;height:80px;object-fit:contain;margin-bottom:0.8rem;}
+.login-title{font-size:20px;font-weight:900;color:var(--primary-dark);margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:1.8rem;}
+.login-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;}
+.login-opt{border:2px solid var(--border);border-radius:var(--radius);padding:1.2rem 0.8rem;cursor:pointer;transition:all 0.2s;background:var(--white);}
+.login-opt:hover,.login-opt.selected{border-color:var(--primary);background:var(--primary-light);}
+.login-opt-icon{font-size:32px;margin-bottom:6px;}
+.login-opt-label{font-size:14px;font-weight:700;color:var(--text);}
+.login-opt-sub{font-size:11px;color:var(--muted);}
+.login-form{display:none;}
+.login-form.active{display:block;}
+.back-btn{background:none;border:none;color:var(--primary);font-size:13px;font-weight:600;margin-bottom:1rem;padding:4px 0;display:flex;align-items:center;gap:4px;}
+
+/* ── FIELDS ── */
+.field{margin-bottom:1rem;text-align:right;}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);
+  font-size:14px;color:var(--text);background:var(--white);outline:none;transition:border 0.2s;direction:rtl;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary);}
+.field .hint{font-size:11px;color:var(--muted);margin-top:4px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* ── BUTTONS ── */
+.btn{padding:11px 22px;border-radius:var(--radius-sm);font-size:14px;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{background:#1B5E20;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--muted);}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary);}
+.btn-full{width:100%;}
+.btn-sm{padding:7px 14px;font-size:12px;}
+.btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* ── APP LAYOUT ── */
+#screen-app{padding-bottom:70px;}
+.topbar{background:var(--primary);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:90;box-shadow:var(--shadow);}
+.topbar-title{font-size:16px;font-weight:800;}
+.topbar-user{display:flex;align-items:center;gap:8px;font-size:13px;}
+.user-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.4);cursor:pointer;}
+.user-avatar-placeholder{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:90;box-shadow:0 -2px 10px rgba(0,0,0,0.08);}
+.nav-btn{flex:1;padding:10px 4px 8px;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--muted);font-size:10px;font-weight:600;transition:color 0.2s;}
+.nav-btn.active{color:var(--primary);}
+.nav-btn svg,.nav-icon{font-size:20px;}
+.badge-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--red);border-radius:50%;border:1px solid white;}
+.nav-icon-wrap{position:relative;display:inline-block;}
+
+/* ── PAGE SECTIONS ── */
+.page{display:none;padding:16px;animation:fadeIn 0.2s;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:var(--radius);padding:1.2rem;box-shadow:var(--shadow);margin-bottom:12px;}
+.card-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.section-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:12px;}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px;}
+.stat-card{background:var(--white);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);text-align:center;}
+.stat-num{font-size:28px;font-weight:900;color:var(--primary);}
+.stat-label{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* ── MEMBER LIST ── */
+.member-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.member-item:last-child{border-bottom:none;}
+.member-ava{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--primary);flex-shrink:0;}
+.member-info{flex:1;}
+.member-name{font-size:14px;font-weight:700;}
+.member-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block;}
+.badge-active{background:var(--green-light);color:var(--green);}
+.badge-pending{background:var(--orange-light);color:var(--orange);}
+.badge-rejected{background:var(--red-light);color:var(--red);}
+.badge-blue{background:var(--primary-light);color:var(--primary);}
+.badge-closed{background:#EEE;color:#666;}
+
+/* ── ALERT ── */
+.alert{padding:12px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px;}
+.alert-info{background:var(--primary-light);color:var(--primary);}
+.alert-success{background:var(--green-light);color:var(--green);}
+.alert-warning{background:var(--orange-light);color:var(--orange);}
+.alert-error{background:var(--red-light);color:var(--red);}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:flex-end;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding:1.5rem;animation:slideUp 0.3s ease;}
+@media(min-width:600px){
+  .modal-overlay{align-items:center;}
+  .modal{border-radius:var(--radius);max-width:560px;max-height:85vh;}
+}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.modal-title{font-size:17px;font-weight:800;color:var(--text);}
+.modal-close{background:var(--gray);border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;}
+
+/* ── PROFILE ── */
+.profile-header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:var(--radius);padding:1.5rem;color:#fff;text-align:center;margin-bottom:12px;}
+.profile-photo-wrap{position:relative;width:80px;height:80px;margin:0 auto 10px;}
+.profile-photo{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.4);}
+.profile-photo-placeholder{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;border:3px solid rgba(255,255,255,0.4);}
+.photo-edit-btn{position:absolute;bottom:0;left:0;width:24px;height:24px;background:var(--white);border:none;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.profile-name{font-size:18px;font-weight:800;}
+.profile-username{font-size:13px;opacity:0.75;margin-top:2px;}
+.info-list .info-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.info-list .info-row:last-child{border-bottom:none;}
+.info-label{color:var(--muted);font-weight:600;}
+.info-value{font-weight:600;color:var(--text);}
+
+/* ── EVENT CARD ── */
+.event-card{background:var(--white);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow);margin-bottom:10px;border-right:4px solid var(--primary);}
+.event-card.closed{border-right-color:var(--muted);opacity:0.8;}
+.event-title{font-size:15px;font-weight:800;margin-bottom:6px;}
+.event-meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px;}
+.event-meta span{display:flex;align-items:center;gap:4px;}
+
+/* ── QUIZ ── */
+.question-card{background:var(--white);border-radius:var(--radius);padding:1.2rem;margin-bottom:10px;box-shadow:var(--shadow);}
+.question-num{font-size:11px;color:var(--primary);font-weight:700;margin-bottom:6px;}
+.question-text{font-size:15px;font-weight:700;margin-bottom:12px;line-height:1.5;}
+.options-list{display:flex;flex-direction:column;gap:8px;}
+.option-btn{width:100%;text-align:right;padding:10px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--white);font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;}
+.option-btn:hover{border-color:var(--primary);background:var(--primary-light);}
+.option-btn.selected{border-color:var(--primary);background:var(--primary-light);color:var(--primary);}
+.option-btn.correct{border-color:var(--green);background:var(--green-light);color:var(--green);}
+.option-btn.wrong{border-color:var(--red);background:var(--red-light);color:var(--red);}
+
+/* ── NOTE ── */
+.note-item{padding:10px 12px;border-radius:var(--radius-sm);margin-bottom:8px;font-size:13px;line-height:1.5;}
+.note-general{background:var(--gray);}
+.note-positive{background:var(--green-light);border-right:3px solid var(--green);}
+.note-warning{background:var(--orange-light);border-right:3px solid var(--orange);}
+.note-financial{background:#E8EAF6;border-right:3px solid #3F51B5;}
+.note-meta{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:11px 22px;border-radius:10px;font-size:13px;font-weight:700;z-index:9999;display:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+.toast.show{display:block;animation:fadeIn 0.3s;}
+.toast-success{background:var(--green);color:#fff;}
+.toast-error{background:var(--red);color:#fff;}
+.toast-info{background:var(--primary);color:#fff;}
+
+/* ── ADMIN LAYOUT ── */
+.admin-topbar{background:var(--primary-dark);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:90;box-shadow:0 2px 12px rgba(0,0,0,0.2);}
+.admin-topbar-logo{display:flex;align-items:center;gap:12px;}
+.admin-sidebar{background:#fff;border-bottom:1px solid var(--border);padding:0 16px;display:flex;gap:4px;overflow-x:auto;white-space:nowrap;}
+.admin-nav-item{padding:12px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;flex-shrink:0;}
+.admin-nav-item:hover{color:var(--primary);}
+.admin-nav-item.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:700;}
+.admin-content{padding:20px;max-width:900px;margin:0 auto;}
+.admin-page{display:none;}
+.admin-page.active{display:block;}
+.admin-stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
+@media(min-width:600px){.admin-stats-grid{grid-template-columns:repeat(4,1fr);}}
+.admin-stat{background:#fff;border-radius:12px;padding:1.2rem;box-shadow:var(--shadow);text-align:center;border-top:3px solid var(--primary);}
+.admin-stat-num{font-size:32px;font-weight:900;color:var(--primary);}
+.admin-stat-label{font-size:12px;color:var(--muted);margin-top:4px;}
+.admin-card{background:#fff;border-radius:12px;padding:1.4rem;box-shadow:var(--shadow);margin-bottom:16px;}
+.admin-card-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--gray);display:flex;align-items:center;justify-content:space-between;}
+.admin-table{width:100%;border-collapse:collapse;font-size:13px;}
+.admin-table th{background:var(--gray);padding:10px 12px;text-align:right;font-weight:700;color:var(--muted);}
+.admin-table td{padding:12px;border-bottom:1px solid var(--gray);vertical-align:middle;}
+.admin-table tr:hover td{background:#f8fbff;}
+.admin-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ── LOADING ── */
+.loading-spinner{display:flex;align-items:center;justify-content:center;padding:2rem;gap:10px;color:var(--muted);}
+.spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── LEADERBOARD ── */
+.leader-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.leader-rank{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;}
+.rank-1{background:#FFD700;color:#000;}
+.rank-2{background:#C0C0C0;color:#000;}
+.rank-3{background:#CD7F32;color:#fff;}
+.rank-other{background:var(--gray);color:var(--muted);}
+
+/* RESPONSIVE */
+@media(min-width:768px){
+  #screen-app{max-width:480px;margin:0 auto;}
+  .bottom-nav{max-width:480px;left:50%;transform:translateX(-50%);}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN 1: LOGIN                           -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-box">
+    <img src="logo.png" class="login-logo" onerror="this.style.display='none'"/>
+    <div class="login-title">مركز ارتقاء</div>
+    <div class="login-sub">للتنمية المجتمعية</div>
+
+    <!-- اختيار نوع الدخول -->
+    <div id="loginOptions">
+      <div style="font-size:14px;font-weight:700;color:var(--muted);margin-bottom:12px;">اختر طريقة الدخول</div>
+      <div class="login-options">
+        <div class="login-opt" onclick="showLoginForm('member')">
+          <div class="login-opt-icon">👤</div>
+          <div class="login-opt-label">عضو</div>
+          <div class="login-opt-sub">تسجيل دخول أو حساب جديد</div>
+        </div>
+        <div class="login-opt" onclick="showLoginForm('admin')">
+          <div class="login-opt-icon">🔐</div>
+          <div class="login-opt-label">كادر إداري</div>
+          <div class="login-opt-sub">دخول بالرمز الإداري</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- فورم العضو -->
+    <div class="login-form" id="memberLoginForm">
+      <button class="back-btn" onclick="backToOptions()">← رجوع</button>
+      <div style="display:flex;gap:8px;margin-bottom:1.2rem;">
+        <button class="btn btn-primary" style="flex:1;font-size:13px" onclick="switchMemberTab('login')">تسجيل دخول</button>
+        <button class="btn btn-outline" style="flex:1;font-size:13px" onclick="switchMemberTab('register')">حساب جديد</button>
+      </div>
+
+      <!-- تسجيل دخول -->
+      <div id="memberLoginTab">
+        <div class="field"><label>اسم المستخدم</label><input id="loginUsername" placeholder="username"/></div>
+        <div class="field"><label>الرمز السري</label><input id="loginPassword" type="password" placeholder="••••••"/></div>
+        <button class="btn btn-primary btn-full" onclick="doLogin()">دخول</button>
+      </div>
+
+      <!-- تسجيل جديد -->
+      <div id="memberRegisterTab" style="display:none">
+        <div class="alert alert-info">📱 تأكد أن رقم الواتساب صحيح، سيتم التواصل معك عبره</div>
+        <div class="field"><label>الاسم الثلاثي *</label><input id="regName" placeholder="أحمد محمد علي"/></div>
+        <div class="field">
+          <label>اسم المستخدم * (4 أحرف إنجليزية فقط)</label>
+          <input id="regUsername" placeholder="abcd" maxlength="8" oninput="validateUsername(this)"/>
+          <div class="hint">من 4 إلى 8 أحرف إنجليزية صغيرة فقط</div>
+        </div>
+        <div class="field">
+          <label>الرمز السري * (5-8 أرقام أو أحرف)</label>
+          <input id="regPassword" placeholder="abc12" maxlength="8"/>
+          <div class="hint">من 5 إلى 8 أحرف وأرقام</div>
+        </div>
+        <div class="field"><label>رقم الواتساب *</label><input id="regPhone" placeholder="07801234567" type="tel"/></div>
+        <button class="btn btn-green btn-full" onclick="doRegister()">إرسال طلب التسجيل</button>
+      </div>
+    </div>
+
+    <!-- فورم الإداري -->
+    <div class="login-form" id="adminLoginForm">
+      <button class="back-btn" onclick="backToOptions()">← رجوع</button>
+      <div class="field"><label>رمز الدخول الإداري</label><input id="adminPassword" type="password" placeholder="••••••••"/></div>
+      <button class="btn btn-primary btn-full" onclick="doAdminLogin()">دخول الكادر الإداري</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN 2: ADMIN DASHBOARD                 -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-admin" class="screen">
+  <div class="admin-topbar">
+    <div class="admin-topbar-logo">
+      <img src="logo.png" style="width:36px;height:36px;object-fit:contain;" onerror="this.style.display='none'"/>
+      <div>
+        <div style="font-size:15px;font-weight:800;color:#fff;">مركز ارتقاء</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);">لوحة التحكم الإدارية</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div id="adminNotifBadge" style="background:var(--red);color:#fff;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;display:none;"></div>
+      <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,0.3);font-size:12px;padding:6px 14px;" onclick="adminLogout()">خروج</button>
+    </div>
+  </div>
+
+  <div class="admin-sidebar">
+    <div class="admin-nav-item active" onclick="showAdminPage('dashboard')" id="anav-dashboard">
+      <span>📊</span> لوحة التحكم
+    </div>
+    <div class="admin-nav-item" onclick="showAdminPage('members')" id="anav-members">
+      <span>👥</span> الأعضاء
+    </div>
+    <div class="admin-nav-item" onclick="showAdminPage('events')" id="anav-events">
+      <span>📅</span> الأحداث
+    </div>
+    <div class="admin-nav-item" onclick="showAdminPage('competitions')" id="anav-competitions">
+      <span>🏆</span> المسابقات
+    </div>
+    <div class="admin-nav-item" onclick="showAdminPage('subscriptions')" id="anav-subscriptions">
+      <span>💳</span> الاشتراكات
+    </div>
+    <div class="admin-nav-item" onclick="showAdminPage('requests')" id="anav-requests">
+      <span>⏳</span> الطلبات المعلقة
+      <span id="adminReqCount" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-right:4px;display:none;"></span>
+    </div>
+  </div>
+
+  <div class="admin-content">
+    <div class="admin-page active" id="apage-dashboard">
+      <div id="adminDashboardContent"></div>
+    </div>
+    <div class="admin-page" id="apage-members">
+      <div id="adminMembersContent"></div>
+    </div>
+    <div class="admin-page" id="apage-events">
+      <div id="adminEventsContent"></div>
+    </div>
+    <div class="admin-page" id="apage-competitions">
+      <div id="adminCompContent"></div>
+    </div>
+    <div class="admin-page" id="apage-subscriptions">
+      <div id="adminSubsContent"></div>
+    </div>
+    <div class="admin-page" id="apage-requests">
+      <div id="adminRequestsContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- SCREEN 3: APP (MEMBER)                    -->
+<!-- ══════════════════════════════════════════ -->
+<div id="screen-app" class="screen">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">الرئيسية</div>
+    <div class="topbar-user">
+      <span id="topbarName" style="font-size:12px;opacity:0.85"></span>
+      <div class="user-avatar-placeholder" id="topbarAvatar" onclick="showPage('profile')">👤</div>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+
+  <!-- ── HOME ── -->
+  <div class="page active" id="page-home">
+    <div id="homeContent"></div>
+  </div>
+
+  <!-- ── EVENTS ── -->
+  <div class="page" id="page-events">
+    <div id="eventsContent"></div>
+  </div>
+
+  <!-- ── COMPETITIONS ── -->
+  <div class="page" id="page-competitions">
+    <div id="competitionsContent"></div>
+  </div>
+
+  <!-- ── SUBSCRIPTION ── -->
+  <div class="page" id="page-subscription">
+    <div id="subscriptionContent"></div>
+  </div>
+
+  <!-- ── PROFILE ── -->
+  <div class="page" id="page-profile">
+    <div id="profileContent"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="nav-btn active" onclick="showPage('home')" id="nav-home">
+      <span style="font-size:22px">🏠</span><span>الرئيسية</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('events')" id="nav-events">
+      <span style="font-size:22px">📅</span><span>الأحداث</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('competitions')" id="nav-competitions">
+      <span style="font-size:22px">🏆</span><span>المسابقات</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('subscription')" id="nav-subscription">
+      <span style="font-size:22px">💳</span><span>اشتراكي</span>
+    </button>
+    <button class="nav-btn" onclick="showPage('profile')" id="nav-profile">
+      <span style="font-size:22px">👤</span><span>ملفي</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MODALS                                    -->
+<!-- ══════════════════════════════════════════ -->
+
+<!-- Add Event Modal -->
+<div class="modal-overlay" id="addEventModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📅 إضافة حدث جديد</div>
+      <button class="modal-close" onclick="closeModal('addEventModal')">✕</button>
+    </div>
+    <div class="field"><label>عنوان الحدث *</label><input id="ev_title" placeholder="اسم الفعالية"/></div>
+    <div class="field"><label>الوصف *</label><textarea id="ev_desc" rows="3" placeholder="وصف تفصيلي..."></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>تاريخ البدء *</label><input id="ev_start" type="datetime-local"/></div>
+      <div class="field"><label>تاريخ الانتهاء</label><input id="ev_end" type="datetime-local"/></div>
+    </div>
+    <div class="field"><label>موعد إغلاق التسجيل *</label><input id="ev_deadline" type="datetime-local"/></div>
+    <div class="field"><label>رابط التسجيل</label><input id="ev_link" placeholder="https://..."/></div>
+    <div class="field"><label>الحد الأقصى للمشاركين</label><input id="ev_max" type="number" placeholder="اختياري"/></div>
+    <div class="field"><label>المتطلبات</label><textarea id="ev_req" rows="2" placeholder="ما يجب على المشارك توفيره..."></textarea></div>
+    <div class="field"><label>الشروط والأحكام</label><textarea id="ev_cond" rows="2" placeholder="شروط المشاركة..."></textarea></div>
+    <button class="btn btn-primary btn-full" onclick="saveEvent()">💾 حفظ الحدث</button>
+  </div>
+</div>
+
+<!-- Add Competition Modal -->
+<div class="modal-overlay" id="addCompModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🏆 إضافة مسابقة جديدة</div>
+      <button class="modal-close" onclick="closeModal('addCompModal')">✕</button>
+    </div>
+    <div class="field"><label>عنوان المسابقة *</label><input id="comp_title" placeholder="اسم المسابقة"/></div>
+    <div class="field"><label>الوصف</label><textarea id="comp_desc" rows="2"></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>تاريخ البدء</label><input id="comp_start" type="datetime-local"/></div>
+      <div class="field"><label>تاريخ الانتهاء</label><input id="comp_end" type="datetime-local"/></div>
+    </div>
+    <div class="field">
+      <label>عدد الأسئلة *</label>
+      <select id="comp_qcount" onchange="buildQuestionsForm()">
+        <option value="3">3 أسئلة</option>
+        <option value="5" selected>5 أسئلة</option>
+        <option value="10">10 أسئلة</option>
+        <option value="15">15 سؤال</option>
+        <option value="20">20 سؤال</option>
+      </select>
+    </div>
+    <div id="questionsForm"></div>
+    <button class="btn btn-primary btn-full" onclick="saveCompetition()">💾 حفظ المسابقة</button>
+  </div>
+</div>
+
+<!-- Add Subscription Modal -->
+<div class="modal-overlay" id="addSubModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💳 تسجيل دفعة اشتراك</div>
+      <button class="modal-close" onclick="closeModal('addSubModal')">✕</button>
+    </div>
+    <div class="alert alert-warning">🔒 هذه الخاصية تتطلب رمز المالية الخاص</div>
+    <div class="field"><label>رمز المالية *</label><input id="sub_pass" type="password" placeholder="••••••••" autocomplete="off"/></div>
+    <div class="field"><label>العضو *</label><select id="sub_member"></select></div>
+    <div class="field"><label>الشهر والسنة *</label><input id="sub_month" placeholder="2025/04"/></div>
+    <div class="field"><label>المبلغ (د.ع)</label><input id="sub_amount" type="number" placeholder="25000"/></div>
+    <div class="field"><label>ملاحظات</label><textarea id="sub_notes" rows="2"></textarea></div>
+    <button class="btn btn-primary btn-full" onclick="saveSubscription()">💾 حفظ</button>
+  </div>
+</div>
+
+<!-- Add Note Modal -->
+<div class="modal-overlay" id="addNoteModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📝 إضافة ملاحظة إدارية</div>
+      <button class="modal-close" onclick="closeModal('addNoteModal')">✕</button>
+    </div>
+    <div class="field"><label>نوع الملاحظة</label>
+      <select id="note_type">
+        <option value="general">عامة</option>
+        <option value="positive">إيجابية ✅</option>
+        <option value="warning">تحذير ⚠️</option>
+        <option value="financial">مالية 💰</option>
+      </select>
+    </div>
+    <div class="field"><label>الملاحظة *</label><textarea id="note_text" rows="4" placeholder="اكتب الملاحظة..."></textarea></div>
+    <button class="btn btn-primary btn-full" onclick="saveNote()">💾 حفظ الملاحظة</button>
+  </div>
+</div>
+
+<!-- Add Points Modal -->
+<div class="modal-overlay" id="addPointsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">⭐ إضافة نقاط</div>
+      <button class="modal-close" onclick="closeModal('addPointsModal')">✕</button>
+    </div>
+    <div class="field"><label>عدد النقاط</label><input id="points_val" type="number" placeholder="10" min="1" max="100"/></div>
+    <button class="btn btn-primary btn-full" onclick="savePoints()">💾 إضافة</button>
+  </div>
+</div>
+
+<!-- Member Detail Modal -->
+<div class="modal-overlay" id="memberDetailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="memberDetailTitle">تفاصيل العضو</div>
+      <button class="modal-close" onclick="closeModal('memberDetailModal')">✕</button>
+    </div>
+    <div id="memberDetailContent"></div>
+  </div>
+</div>
+
+<!-- Photo Approval Modal -->
+<div class="modal-overlay" id="photoApprovalModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🖼️ مراجعة الصور المعلقة</div>
+      <button class="modal-close" onclick="closeModal('photoApprovalModal')">✕</button>
+    </div>
+    <div id="photoApprovalContent"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- JAVASCRIPT                                -->
+<!-- ══════════════════════════════════════════ -->
+<script>
+const API = '/api/data';
+let currentUser = null;
+let currentNoteTargetId = null;
+let currentPointsTargetId = null;
+let activeCompetition = null;
+let quizAnswers = {};
+let quizSubmitted = false;
+
+// ── API ──────────────────────────────────────
+async function api(action, body = null, extra = {}) {
+  const params = new URLSearchParams({ action, ...extra });
+  const opts = {
+    method: body ? 'POST' : 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(`${API}?${params}`);
+  return res.json();
+}
+
+// ── TOAST ────────────────────────────────────
+function toast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show toast-${type}`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── MODAL ────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ── LOGIN FLOW ───────────────────────────────
+function showLoginForm(type) {
+  document.getElementById('loginOptions').style.display = 'none';
+  if (type === 'member') document.getElementById('memberLoginForm').classList.add('active');
+  else document.getElementById('adminLoginForm').classList.add('active');
+}
+function backToOptions() {
+  document.getElementById('loginOptions').style.display = 'block';
+  document.getElementById('memberLoginForm').classList.remove('active');
+  document.getElementById('adminLoginForm').classList.remove('active');
+}
+function switchMemberTab(tab) {
+  document.getElementById('memberLoginTab').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('memberRegisterTab').style.display = tab === 'register' ? 'block' : 'none';
+}
+
+function validateUsername(el) {
+  el.value = el.value.replace(/[^a-z]/gi, '').toLowerCase();
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  if (!username || !password) return toast('يرجى إدخال اسم المستخدم والرمز', 'error');
+  const res = await api('login', { username, password });
+  if (!res.success) return toast(res.error || 'خطأ في تسجيل الدخول', 'error');
+  loginSuccess(res.data);
+}
+
+async function doAdminLogin() {
+  const password = document.getElementById('adminPassword').value.trim();
+  if (!password) return toast('يرجى إدخال الرمز', 'error');
+  try {
+    const r = await fetch('/api/data?action=adminLogin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: password })
+    });
+    const res = await r.json();
+    if (!res.success) return toast(res.error || 'رمز غير صحيح', 'error');
+    loginSuccess(res.data);
+  } catch(e) {
+    toast('خطأ في الاتصال', 'error');
+  }
+}
+
+async function doRegister() {
+  const full_name = document.getElementById('regName').value.trim();
+  const username = document.getElementById('regUsername').value.trim();
+  const password = document.getElementById('regPassword').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+
+  if (!full_name || !username || !password || !phone) return toast('يرجى إدخال جميع الحقول', 'error');
+  if (full_name.split(' ').length < 3) return toast('يرجى إدخال الاسم الثلاثي كاملاً', 'error');
+  if (!/^[a-z]{4,8}$/.test(username)) return toast('اسم المستخدم: 4-8 أحرف إنجليزية صغيرة فقط', 'error');
+  if (password.length < 5 || password.length > 8) return toast('الرمز يجب أن يكون بين 5 و 8 أحرف', 'error');
+
+  const res = await api('register', { full_name, username, password, phone });
+  if (!res.success) return toast(res.error || 'فشل التسجيل', 'error');
+  toast('تم إرسال طلبك! حسابك قيد المراجعة من الإدارة', 'success');
+  switchMemberTab('login');
+}
+
+function loginSuccess(user) {
+  currentUser = user;
+  document.getElementById('screen-login').classList.remove('active');
+  if (user.role === 'admin') {
+    document.getElementById('screen-admin').classList.add('active');
+    showAdminPage('dashboard');
+  } else {
+    document.getElementById('screen-app').classList.add('active');
+    document.getElementById('topbarName').textContent = user.full_name.split(' ')[0];
+    setupNavForRole();
+    showPage('home');
+  }
+}
+
+function adminLogout() {
+  currentUser = null;
+  document.getElementById('screen-admin').classList.remove('active');
+  document.getElementById('screen-login').classList.add('active');
+  backToOptions();
+}
+
+function showAdminPage(name) {
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('apage-' + name).classList.add('active');
+  const nav = document.getElementById('anav-' + name);
+  if (nav) nav.classList.add('active');
+  if (name === 'dashboard') loadAdminDashboard();
+  if (name === 'members') loadAdminMembersList();
+  if (name === 'events') loadAdminEvents();
+  if (name === 'competitions') loadAdminCompetitions();
+  if (name === 'subscriptions') loadAdminSubscriptions();
+  if (name === 'requests') loadAdminRequests();
+}
+
+async function loadAdminDashboard() {
+  const stats = await api('getStats', null, {});
+  const d = stats.data || {};
+  document.getElementById('adminDashboardContent').innerHTML = `
+    <div style="background:linear-gradient(135deg,var(--primary-dark),var(--primary));border-radius:14px;padding:1.5rem 2rem;color:#fff;margin-bottom:20px;">
+      <div style="font-size:22px;font-weight:900;">أهلاً، ${currentUser.full_name} 👋</div>
+      <div style="font-size:13px;opacity:0.75;margin-top:4px;">لوحة التحكم الإدارية - مركز ارتقاء للتنمية المجتمعية</div>
+    </div>
+    <div class="admin-stats-grid">
+      <div class="admin-stat"><div class="admin-stat-num">${d.totalMembers||0}</div><div class="admin-stat-label">أعضاء نشطون</div></div>
+      <div class="admin-stat" style="border-top-color:var(--orange)"><div class="admin-stat-num" style="color:var(--orange)">${d.pendingMembers||0}</div><div class="admin-stat-label">طلبات معلقة</div></div>
+      <div class="admin-stat" style="border-top-color:var(--green)"><div class="admin-stat-num" style="color:var(--green)">${d.totalEvents||0}</div><div class="admin-stat-label">الأحداث</div></div>
+      <div class="admin-stat" style="border-top-color:#9C27B0"><div class="admin-stat-num" style="color:#9C27B0">${d.pendingPhotos||0}</div><div class="admin-stat-label">صور معلقة</div></div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card-title">⚡ إجراءات سريعة</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button class="btn btn-primary" onclick="showAdminPage('requests')">⏳ الطلبات المعلقة</button>
+        <button class="btn btn-primary" onclick="openModal('addEventModal')">📅 حدث جديد</button>
+        <button class="btn btn-primary" onclick="openAddCompModal()">🏆 مسابقة جديدة</button>
+        <button class="btn btn-primary" onclick="openAddSubModal()">💳 تسجيل اشتراك</button>
+      </div>
+    </div>`;
+  if (d.pendingMembers > 0) {
+    document.getElementById('adminReqCount').textContent = d.pendingMembers;
+    document.getElementById('adminReqCount').style.display = 'inline';
+  }
+}
+
+async function loadAdminMembersList() {
+  const res = await api('getMembers', null, {});
+  const members = (res.data || []).filter(m => m.role === 'member');
+  const leaders = [...members].sort((a,b) => (b.points||0)-(a.points||0)).slice(0,5);
+  let html = `
+    <div class="admin-card">
+      <div class="admin-card-title">🏅 أكثر الأعضاء تفاعلاً <span style="font-size:12px;color:var(--muted);font-weight:400;">بناءً على النقاط</span></div>
+      ${leaders.map((m,i) => `<div class="leader-item">
+        <div class="leader-rank ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other'}">${i+1}</div>
+        <div style="flex:1"><div style="font-size:14px;font-weight:700;">${m.full_name}</div><div style="font-size:12px;color:var(--muted);">@${m.username}</div></div>
+        <div style="font-weight:800;color:var(--primary);">⭐ ${m.points||0}</div>
+      </div>`).join('')}
+    </div>
+    <div class="admin-card">
+      <div class="admin-card-title">👥 جميع الأعضاء (${members.length})</div>
+      <table class="admin-table">
+        <thead><tr><th>الاسم</th><th>اسم المستخدم</th><th>الهاتف</th><th>الحالة</th><th>النقاط</th><th>إجراءات</th></tr></thead>
+        <tbody>
+          ${members.map(m => `<tr>
+            <td>${m.full_name}</td>
+            <td style="direction:ltr;text-align:right;">@${m.username}</td>
+            <td>${m.phone||'-'}</td>
+            <td><span class="badge ${m.status==='active'?'badge-active':m.status==='pending'?'badge-pending':'badge-rejected'}">${m.status==='active'?'نشط':m.status==='pending'?'معلق':'موقوف'}</span></td>
+            <td>⭐ ${m.points||0}</td>
+            <td><div class="admin-actions">
+              <button class="btn btn-outline btn-sm" onclick="viewAdminMember('${m.id}')">عرض</button>
+              <button class="btn btn-outline btn-sm" onclick="openAddPoints('${m.id}')">+ نقاط</button>
+            </div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  document.getElementById('adminMembersContent').innerHTML = html;
+}
+
+async function loadAdminEvents() {
+  const res = await api('getEvents', null, {});
+  const events = res.data || [];
+  let html = `<div class="admin-card">
+    <div class="admin-card-title">📅 الأحداث والفعاليات
+      <button class="btn btn-primary btn-sm" onclick="openModal('addEventModal')">+ إضافة حدث</button>
+    </div>
+    <table class="admin-table">
+      <thead><tr><th>العنوان</th><th>تاريخ البدء</th><th>آخر تسجيل</th><th>الحالة</th></tr></thead>
+      <tbody>
+        ${events.map(e => `<tr>
+          <td>${e.title}</td>
+          <td>${e.start_date ? new Date(e.start_date).toLocaleDateString('ar') : '-'}</td>
+          <td>${e.registration_deadline ? new Date(e.registration_deadline).toLocaleDateString('ar') : '-'}</td>
+          <td><span class="badge ${e.status==='open'?'badge-active':'badge-closed'}">${e.status==='open'?'🟢 مفتوح':'🔴 مغلق'}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+  document.getElementById('adminEventsContent').innerHTML = html;
+}
+
+async function loadAdminCompetitions() {
+  const res = await api('getCompetitions', null, {});
+  const comps = res.data || [];
+  let html = `<div class="admin-card">
+    <div class="admin-card-title">🏆 المسابقات
+      <button class="btn btn-primary btn-sm" onclick="openAddCompModal()">+ إضافة مسابقة</button>
+    </div>
+    ${comps.map(c => `<div style="background:var(--gray);border-radius:10px;padding:12px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-weight:700;">${c.title}</div>
+        <span class="badge ${c.status==='active'?'badge-active':'badge-closed'}">${c.status==='active'?'نشطة':'مغلقة'}</span>
+      </div>
+      <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="viewCompResults('${c.id}')">📊 النتائج</button>
+    </div>`).join('')}
+  </div>`;
+  document.getElementById('adminCompContent').innerHTML = html;
+}
+
+async function loadAdminSubscriptions() {
+  const res = await api('getMembers', null, {});
+  const members = (res.data || []).filter(m => m.role === 'member');
+  let html = `<div class="admin-card">
+    <div class="admin-card-title">💳 الاشتراكات
+      <button class="btn btn-primary btn-sm" onclick="openAddSubModal()">+ تسجيل دفعة</button>
+    </div>
+    <table class="admin-table">
+      <thead><tr><th>العضو</th><th>آخر دفعة</th><th>إجراءات</th></tr></thead>
+      <tbody>
+        ${members.map(m => `<tr>
+          <td>${m.full_name}</td>
+          <td>${m.subscriptions && m.subscriptions[0] ? m.subscriptions[0].month_year : 'لا يوجد'}</td>
+          <td><button class="btn btn-outline btn-sm" onclick="viewMemberSubs('${m.id}','${m.full_name}')">عرض</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+  document.getElementById('adminSubsContent').innerHTML = html;
+}
+
+async function loadAdminRequests() {
+  const res = await api('getPendingMembers', null, {});
+  const pending = res.data || [];
+  const photos = await api('getPendingPhotos', null, {});
+  const pendingPhotos = photos.data || [];
+  let html = '';
+  if (pending.length) {
+    html += `<div class="admin-card">
+      <div class="admin-card-title">⏳ طلبات تسجيل جديدة (${pending.length})</div>
+      ${pending.map(m => `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray);">
+        <div style="flex:1">
+          <div style="font-weight:700;">${m.full_name}</div>
+          <div style="font-size:12px;color:var(--muted);">@${m.username} | ${m.phone}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-green btn-sm" onclick="approveMember('${m.id}')">✅ قبول</button>
+          <button class="btn btn-red btn-sm" onclick="rejectMember('${m.id}')">❌ رفض</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }
+  if (pendingPhotos.length) {
+    html += `<div class="admin-card">
+      <div class="admin-card-title">🖼️ صور بانتظار الموافقة (${pendingPhotos.length})</div>
+      ${pendingPhotos.map(m => `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray);">
+        <img src="${m.photo_pending_url}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;"/>
+        <div style="flex:1"><div style="font-weight:700;">${m.full_name}</div><div style="font-size:12px;color:var(--muted);">@${m.username}</div></div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-green btn-sm" onclick="approvePhoto('${m.id}')">✅ قبول</button>
+          <button class="btn btn-red btn-sm" onclick="rejectPhoto('${m.id}')">❌ رفض</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }
+  if (!html) html = '<div class="admin-card" style="text-align:center;color:var(--muted);padding:2rem;">✅ لا توجد طلبات معلقة</div>';
+  document.getElementById('adminRequestsContent').innerHTML = html;
+}
+
+function setupNavForRole() {
+  const isAdmin = currentUser.role === 'admin';
+  // Show all tabs for both roles
+}
+
+// ── NAVIGATION ───────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const nb = document.getElementById('nav-' + name);
+  if (nb) nb.classList.add('active');
+
+  const titles = { home: 'الرئيسية', events: 'الأحداث', competitions: 'المسابقات', subscription: 'الاشتراك', profile: 'ملفي الشخصي' };
+  document.getElementById('topbarTitle').textContent = titles[name] || '';
+
+  if (name === 'home') loadHome();
+  if (name === 'events') loadEvents();
+  if (name === 'competitions') loadCompetitions();
+  if (name === 'subscription') loadSubscription();
+  if (name === 'profile') loadProfile();
+}
+
+// ── HOME ──────────────────────────────────────
+async function loadHome() {
+  const isAdmin = currentUser.role === 'admin';
+  if (isAdmin) await loadAdminHome();
+  else await loadMemberHome();
+}
+
+async function loadMemberHome() {
+  const res = await api('getStats', null, {});
+  document.getElementById('homeContent').innerHTML = `
+    <div class="card" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;">
+      <div style="font-size:22px;font-weight:900;margin-bottom:4px;">أهلاً ${currentUser.full_name.split(' ')[0]} 👋</div>
+      <div style="font-size:13px;opacity:0.8;">مركز ارتقاء للتنمية المجتمعية</div>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:8px;">
+        <span style="background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:20px;font-size:12px;">عضو #${currentUser.member_number || '-'}</span>
+        <span class="badge ${currentUser.status==='active'?'badge-active':'badge-pending'}">${currentUser.status==='active'?'✅ نشط':'⏳ قيد المراجعة'}</span>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">${currentUser.points || 0}</div><div class="stat-label">نقاطي</div></div>
+      <div class="stat-card"><div class="stat-num">${res.data?.totalEvents || 0}</div><div class="stat-label">الأحداث</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🚀 روابط سريعة</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button class="btn btn-outline btn-sm" onclick="showPage('events')">📅 الأحداث</button>
+        <button class="btn btn-outline btn-sm" onclick="showPage('competitions')">🏆 المسابقات</button>
+        <button class="btn btn-outline btn-sm" onclick="showPage('subscription')">💳 اشتراكي</button>
+        <button class="btn btn-outline btn-sm" onclick="showPage('profile')">👤 ملفي</button>
+      </div>
+    </div>`;
+}
+
+async function loadAdminHome() {
+  const stats = await api('getStats', null, {});
+  const d = stats.data || {};
+  const pendingRes = await api('getPendingMembers', null, {});
+  const pendingPhotos = await api('getPendingPhotos', null, {});
+
+  let pendingHTML = '';
+  if (pendingRes.data && pendingRes.data.length > 0) {
+    pendingHTML = `<div class="card">
+      <div class="card-title">⏳ طلبات تسجيل جديدة (${pendingRes.data.length})</div>
+      ${pendingRes.data.map(m => `
+        <div class="member-item">
+          <div class="member-ava">${m.full_name.charAt(0)}</div>
+          <div class="member-info">
+            <div class="member-name">${m.full_name}</div>
+            <div class="member-meta">@${m.username} | ${m.phone}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn btn-green btn-sm" onclick="approveMember('${m.id}')">قبول</button>
+            <button class="btn btn-red btn-sm" onclick="rejectMember('${m.id}')">رفض</button>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  let photoHTML = '';
+  if (pendingPhotos.data && pendingPhotos.data.length > 0) {
+    photoHTML = `<div class="card">
+      <div class="card-title">🖼️ صور بانتظار الموافقة (${pendingPhotos.data.length})</div>
+      ${pendingPhotos.data.map(m => `
+        <div class="member-item">
+          <img src="${m.photo_pending_url}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;"/>
+          <div class="member-info"><div class="member-name">${m.full_name}</div><div class="member-meta">@${m.username}</div></div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button class="btn btn-green btn-sm" onclick="approvePhoto('${m.id}')">قبول</button>
+            <button class="btn btn-red btn-sm" onclick="rejectPhoto('${m.id}')">رفض</button>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  document.getElementById('homeContent').innerHTML = `
+    <div class="card" style="background:linear-gradient(135deg,var(--primary),var(--green));color:#fff;">
+      <div style="font-size:20px;font-weight:900;margin-bottom:4px;">لوحة التحكم الإدارية 🎛️</div>
+      <div style="font-size:12px;opacity:0.8;">مركز ارتقاء للتنمية المجتمعية</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">${d.totalMembers||0}</div><div class="stat-label">إجمالي الأعضاء</div></div>
+      <div class="stat-card"><div class="stat-num">${d.activeMembers||0}</div><div class="stat-label">أعضاء نشطون</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--orange)">${d.pendingMembers||0}</div><div class="stat-label">طلبات معلقة</div></div>
+      <div class="stat-card"><div class="stat-num">${d.totalEvents||0}</div><div class="stat-label">الأحداث</div></div>
+    </div>
+    ${pendingHTML}
+    ${photoHTML}
+    <div class="card">
+      <div class="card-title">⚡ إجراءات سريعة</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="openModal('addEventModal')">📅 حدث جديد</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddCompModal()">🏆 مسابقة جديدة</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddSubModal()">💳 تسجيل اشتراك</button>
+        <button class="btn btn-outline btn-sm" onclick="showPage('events')">📋 إدارة الأحداث</button>
+      </div>
+    </div>`;
+}
+
+// ── MEMBERS APPROVAL ──────────────────────────
+async function approveMember(id) {
+  await api('updateMemberStatus', { id, status: 'active' });
+  toast('تم قبول العضو ✅', 'success');
+  if (currentUser && currentUser.role === 'admin') { loadAdminRequests(); loadAdminDashboard(); }
+  else loadHome();
+}
+async function rejectMember(id) {
+  await api('updateMemberStatus', { id, status: 'rejected' });
+  toast('تم رفض الطلب', 'error');
+  if (currentUser && currentUser.role === 'admin') { loadAdminRequests(); loadAdminDashboard(); }
+  else loadHome();
+}
+async function approvePhoto(id) {
+  await api('approvePhoto', { id });
+  toast('تمت الموافقة على الصورة ✅', 'success');
+  if (currentUser && currentUser.role === 'admin') { loadAdminRequests(); }
+  else loadHome();
+}
+async function rejectPhoto(id) {
+  await api('rejectPhoto', { id });
+  toast('تم رفض الصورة', 'error');
+  if (currentUser && currentUser.role === 'admin') { loadAdminRequests(); }
+  else loadHome();
+}
+
+// ── EVENTS ────────────────────────────────────
+async function loadEvents() {
+  const isAdmin = currentUser.role === 'admin';
+  const res = await api('getEvents', null, {});
+  const events = res.data || [];
+  const now = new Date();
+
+  let html = '';
+  if (isAdmin) {
+    html += `<button class="btn btn-primary btn-full" style="margin-bottom:12px" onclick="openModal('addEventModal')">📅 إضافة حدث جديد</button>`;
+  }
+
+  if (!events.length) {
+    html += `<div class="card" style="text-align:center;padding:2rem;color:var(--muted)">لا توجد أحداث حالياً</div>`;
+  } else {
+    events.forEach(ev => {
+      const isOpen = ev.status === 'open' && (!ev.registration_deadline || new Date(ev.registration_deadline) > now);
+      const deadlineStr = ev.registration_deadline ? new Date(ev.registration_deadline).toLocaleDateString('ar') : '-';
+      html += `<div class="event-card ${!isOpen ? 'closed' : ''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div class="event-title">${ev.title}</div>
+          <span class="badge ${isOpen ? 'badge-active' : 'badge-closed'}">${isOpen ? '🟢 مفتوح' : '🔴 مغلق'}</span>
+        </div>
+        <div class="event-meta">
+          <span>📅 ${ev.start_date ? new Date(ev.start_date).toLocaleDateString('ar') : '-'}</span>
+          <span>⏰ آخر تسجيل: ${deadlineStr}</span>
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">${ev.description || ''}</div>
+        ${ev.requirements ? `<div style="font-size:12px;background:var(--primary-light);padding:6px 10px;border-radius:6px;margin-bottom:6px;color:var(--primary)">📋 المتطلبات: ${ev.requirements}</div>` : ''}
+        ${ev.conditions ? `<div style="font-size:12px;background:var(--orange-light);padding:6px 10px;border-radius:6px;margin-bottom:6px;color:var(--orange)">📌 الشروط: ${ev.conditions}</div>` : ''}
+        ${isOpen && !isAdmin ? `<button class="btn btn-primary btn-sm btn-full" onclick="registerEvent('${ev.id}')">📝 سجّل الآن</button>` : ''}
+        ${ev.registration_link ? `<a href="${ev.registration_link}" target="_blank" class="btn btn-outline btn-sm btn-full" style="text-decoration:none;margin-top:4px">🔗 رابط التسجيل</a>` : ''}
+      </div>`;
+    });
+  }
+  document.getElementById('eventsContent').innerHTML = html;
+}
+
+async function registerEvent(eventId) {
+  const res = await api('registerEvent', { event_id: eventId, member_id: currentUser.id });
+  if (res.success) { toast('تم تسجيلك بنجاح ✅', 'success'); loadEvents(); }
+  else toast(res.error || 'فشل التسجيل', 'error');
+}
+
+async function saveEvent() {
+  const body = {
+    title: document.getElementById('ev_title').value.trim(),
+    description: document.getElementById('ev_desc').value.trim(),
+    start_date: document.getElementById('ev_start').value,
+    end_date: document.getElementById('ev_end').value || null,
+    registration_deadline: document.getElementById('ev_deadline').value,
+    registration_link: document.getElementById('ev_link').value,
+    max_participants: parseInt(document.getElementById('ev_max').value) || null,
+    requirements: document.getElementById('ev_req').value,
+    conditions: document.getElementById('ev_cond').value,
+    created_by: currentUser.id,
+    status: 'open'
+  };
+  if (!body.title || !body.registration_deadline) return toast('يرجى إدخال العنوان وموعد إغلاق التسجيل', 'error');
+  const res = await api('createEvent', body);
+  if (res.success) { closeModal('addEventModal'); toast('تم إضافة الحدث ✅', 'success'); loadEvents(); }
+  else toast(res.error || 'فشل الحفظ', 'error');
+}
+
+// ── COMPETITIONS ──────────────────────────────
+async function loadCompetitions() {
+  const isAdmin = currentUser.role === 'admin';
+  const res = await api('getCompetitions', null, {});
+  const comps = res.data || [];
+
+  let html = '';
+  if (isAdmin) {
+    html += `<button class="btn btn-primary btn-full" style="margin-bottom:12px" onclick="openAddCompModal()">🏆 إضافة مسابقة جديدة</button>`;
+  }
+
+  if (!comps.length) {
+    html += `<div class="card" style="text-align:center;padding:2rem;color:var(--muted)">لا توجد مسابقات حالياً</div>`;
+  } else {
+    for (const comp of comps) {
+      const participated = !isAdmin ? await api('hasParticipated', null, { competition_id: comp.id, member_id: currentUser.id }) : null;
+      const qCount = comp.competition_questions ? comp.competition_questions[0]?.count || 0 : 0;
+      const pCount = comp.competition_participants ? comp.competition_participants[0]?.count || 0 : 0;
+      html += `<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+          <div style="font-size:15px;font-weight:800;">${comp.title}</div>
+          <span class="badge ${comp.status==='active'?'badge-active':'badge-closed'}">${comp.status==='active'?'🟢 نشطة':'🔴 مغلقة'}</span>
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">${comp.description || ''}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">📝 ${qCount} سؤال | 👥 ${pCount} مشارك</div>
+        ${!isAdmin && comp.status === 'active' ?
+          participated?.participated ?
+            `<div class="alert alert-success">✅ شاركت في هذه المسابقة - أجبت صحيحاً على ${participated.data?.correct_count} من ${participated.data?.total_questions}</div>` :
+            `<button class="btn btn-primary btn-sm btn-full" onclick="startCompetition('${comp.id}','${comp.title}')">🚀 ابدأ المسابقة</button>`
+          : ''}
+        ${isAdmin ? `<button class="btn btn-outline btn-sm" onclick="viewCompResults('${comp.id}')">📊 النتائج</button>` : ''}
+      </div>`;
+    }
+  }
+  document.getElementById('competitionsContent').innerHTML = html;
+}
+
+function openAddCompModal() {
+  buildQuestionsForm();
+  openModal('addCompModal');
+}
+
+function buildQuestionsForm() {
+  const count = parseInt(document.getElementById('comp_qcount').value);
+  let html = '';
+  for (let i = 1; i <= count; i++) {
+    html += `<div style="background:var(--gray);border-radius:10px;padding:12px;margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:8px;">السؤال ${i}</div>
+      <div class="field"><label>نص السؤال *</label><input id="q${i}_text" placeholder="اكتب السؤال..."/></div>
+      <div class="field"><label>أ)</label><input id="q${i}_a" placeholder="الخيار أ"/></div>
+      <div class="field"><label>ب)</label><input id="q${i}_b" placeholder="الخيار ب"/></div>
+      <div class="field"><label>ج)</label><input id="q${i}_c" placeholder="الخيار ج"/></div>
+      <div class="field"><label>د)</label><input id="q${i}_d" placeholder="الخيار د"/></div>
+      <div class="field"><label>الإجابة الصحيحة</label>
+        <select id="q${i}_correct">
+          <option value="a">أ</option><option value="b">ب</option>
+          <option value="c">ج</option><option value="d">د</option>
+        </select>
+      </div>
+    </div>`;
+  }
+  document.getElementById('questionsForm').innerHTML = html;
+}
+
+async function saveCompetition() {
+  const count = parseInt(document.getElementById('comp_qcount').value);
+  const questions = [];
+  for (let i = 1; i <= count; i++) {
+    const text = document.getElementById(`q${i}_text`)?.value.trim();
+    if (!text) return toast(`يرجى إدخال نص السؤال ${i}`, 'error');
+    questions.push({
+      question_text: text,
+      option_a: document.getElementById(`q${i}_a`).value.trim(),
+      option_b: document.getElementById(`q${i}_b`).value.trim(),
+      option_c: document.getElementById(`q${i}_c`).value.trim(),
+      option_d: document.getElementById(`q${i}_d`).value.trim(),
+      correct_answer: document.getElementById(`q${i}_correct`).value,
+    });
+  }
+  const body = {
+    title: document.getElementById('comp_title').value.trim(),
+    description: document.getElementById('comp_desc').value.trim(),
+    start_date: document.getElementById('comp_start').value || null,
+    end_date: document.getElementById('comp_end').value || null,
+    status: 'active',
+    created_by: currentUser.id,
+    questions
+  };
+  if (!body.title) return toast('يرجى إدخال عنوان المسابقة', 'error');
+  const res = await api('createCompetition', body);
+  if (res.success) { closeModal('addCompModal'); toast('تم إنشاء المسابقة ✅', 'success'); loadCompetitions(); }
+  else toast(res.error || 'فشل الحفظ', 'error');
+}
+
+async function startCompetition(compId, title) {
+  const res = await api('getCompetitionQuestions', null, { competition_id: compId });
+  if (!res.success || !res.data.length) return toast('لا توجد أسئلة', 'error');
+  activeCompetition = { id: compId, title, questions: res.data };
+  quizAnswers = {};
+  quizSubmitted = false;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const { questions, title } = activeCompetition;
+  let html = `<div style="background:var(--primary);color:#fff;padding:12px 16px;margin:-16px -16px 16px;font-size:15px;font-weight:800;">${title}</div>`;
+  questions.forEach((q, idx) => {
+    const opts = [
+      { key: 'a', text: q.option_a }, { key: 'b', text: q.option_b },
+      { key: 'c', text: q.option_c }, { key: 'd', text: q.option_d }
+    ];
+    html += `<div class="question-card">
+      <div class="question-num">السؤال ${idx + 1} من ${questions.length}</div>
+      <div class="question-text">${q.question_text}</div>
+      <div class="options-list">
+        ${opts.map(o => `<button class="option-btn" id="opt_${q.id}_${o.key}" onclick="selectAnswer('${q.id}','${o.key}')">${o.key === 'a' ? 'أ' : o.key === 'b' ? 'ب' : o.key === 'c' ? 'ج' : 'د'}) ${o.text}</button>`).join('')}
+      </div>
+    </div>`;
+  });
+  html += `<button class="btn btn-green btn-full" onclick="submitQuiz()">✅ إرسال الإجابات</button>`;
+  document.getElementById('competitionsContent').innerHTML = html;
+  document.getElementById('topbarTitle').textContent = 'المسابقة';
+}
+
+function selectAnswer(qId, optKey) {
+  if (quizSubmitted) return;
+  quizAnswers[qId] = optKey;
+  const opts = ['a', 'b', 'c', 'd'];
+  opts.forEach(k => {
+    const btn = document.getElementById(`opt_${qId}_${k}`);
+    if (btn) btn.classList.toggle('selected', k === optKey);
+  });
+}
+
+async function submitQuiz() {
+  if (quizSubmitted) return;
+  const total = activeCompetition.questions.length;
+  const answered = Object.keys(quizAnswers).length;
+  if (answered < total) return toast(`يرجى الإجابة على جميع الأسئلة (${answered}/${total})`, 'error');
+  quizSubmitted = true;
+  const res = await api('submitCompetition', { competition_id: activeCompetition.id, member_id: currentUser.id, answers: quizAnswers });
+  if (!res.success) { quizSubmitted = false; return toast(res.error || 'فشل الإرسال', 'error'); }
+
+  // Show results
+  activeCompetition.questions.forEach(q => {
+    const correct = q.correct_answer;
+    const userAnswer = quizAnswers[q.id];
+    ['a', 'b', 'c', 'd'].forEach(k => {
+      const btn = document.getElementById(`opt_${q.id}_${k}`);
+      if (btn) {
+        if (k === correct) btn.classList.add('correct');
+        else if (k === userAnswer && k !== correct) btn.classList.add('wrong');
+        btn.disabled = true;
+      }
+    });
+  });
+
+  // Show score
+  const scoreDiv = document.createElement('div');
+  scoreDiv.className = 'card';
+  scoreDiv.style.cssText = 'background:var(--green);color:#fff;text-align:center;margin-top:12px;';
+  scoreDiv.innerHTML = `<div style="font-size:32px;font-weight:900">${res.correct_count}/${res.total}</div><div>إجاباتك الصحيحة</div>`;
+  document.getElementById('competitionsContent').appendChild(scoreDiv);
+  toast(`أجبت صحيحاً على ${res.correct_count} من ${res.total}`, 'success');
+}
+
+async function viewCompResults(compId) {
+  const res = await api('getCompetitionResults', null, { competition_id: compId });
+  if (!res.success) return toast('فشل تحميل النتائج', 'error');
+  const rows = res.data.map((p, i) => `
+    <div class="leader-item">
+      <div class="leader-rank ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other'}">${i + 1}</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700">${p.members?.full_name || '-'}</div>
+        <div style="font-size:12px;color:var(--muted)">@${p.members?.username || '-'}</div>
+      </div>
+      <div style="font-size:16px;font-weight:800;color:var(--primary)">${p.correct_count}/${p.total_questions}</div>
+    </div>`).join('');
+  document.getElementById('memberDetailTitle').textContent = '📊 نتائج المسابقة';
+  document.getElementById('memberDetailContent').innerHTML = rows || '<div style="color:var(--muted);text-align:center;padding:2rem">لا يوجد مشاركون بعد</div>';
+  openModal('memberDetailModal');
+}
+
+// ── SUBSCRIPTION ──────────────────────────────
+async function loadSubscription() {
+  const isAdmin = currentUser.role === 'admin';
+  if (isAdmin) {
+    // Admin: show all members list to manage
+    const mRes = await api('getMembers', null, {});
+    const members = (mRes.data || []).filter(m => m.role === 'member');
+    let html = `<button class="btn btn-primary btn-full" style="margin-bottom:12px" onclick="openAddSubModal()">💳 تسجيل دفعة اشتراك</button>`;
+    html += `<div class="card"><div class="card-title">💳 حالة الاشتراكات</div>`;
+    members.forEach(m => {
+      const lastSub = m.subscriptions && m.subscriptions[0];
+      html += `<div class="member-item">
+        <div class="member-ava">${m.full_name.charAt(0)}</div>
+        <div class="member-info">
+          <div class="member-name">${m.full_name}</div>
+          <div class="member-meta">${lastSub ? `آخر دفعة: ${lastSub.month_year}` : 'لا توجد دفعات'}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="viewMemberSubs('${m.id}','${m.full_name}')">عرض</button>
+      </div>`;
+    });
+    html += `</div>`;
+    document.getElementById('subscriptionContent').innerHTML = html;
+  } else {
+    const res = await api('getSubscriptions', null, { member_id: currentUser.id });
+    const subs = res.data || [];
+    let html = `<div class="card">
+      <div class="card-title">💳 حالة اشتراكي</div>`;
+    if (!subs.length) {
+      html += `<div class="alert alert-warning">لا يوجد سجل اشتراك. تواصل مع الإدارة</div>`;
+    } else {
+      const last = subs[0];
+      html += `<div class="alert alert-success">✅ آخر دفعة مسجلة: ${last.month_year}</div>`;
+      subs.forEach(s => {
+        html += `<div class="member-item">
+          <div style="font-size:24px">💳</div>
+          <div class="member-info">
+            <div class="member-name">${s.month_year}</div>
+            <div class="member-meta">${s.paid_date || ''} ${s.amount ? '| ' + Number(s.amount).toLocaleString() + ' د.ع' : ''}</div>
+          </div>
+          <span class="badge badge-active">مدفوع</span>
+        </div>`;
+      });
+    }
+    html += `</div>`;
+    document.getElementById('subscriptionContent').innerHTML = html;
+  }
+}
+
+async function viewMemberSubs(memberId, name) {
+  const res = await api('getSubscriptions', null, { member_id: memberId });
+  const subs = res.data || [];
+  const rows = subs.map(s => `<div class="member-item">
+    <div style="font-size:22px">💳</div>
+    <div class="member-info"><div class="member-name">${s.month_year}</div><div class="member-meta">${s.paid_date || ''}</div></div>
+    <span style="font-size:13px;font-weight:700;color:var(--green)">${s.amount ? Number(s.amount).toLocaleString() + ' د.ع' : '-'}</span>
+  </div>`).join('');
+  document.getElementById('memberDetailTitle').textContent = `💳 اشتراكات ${name}`;
+  document.getElementById('memberDetailContent').innerHTML = rows || '<div style="color:var(--muted);text-align:center;padding:2rem">لا يوجد سجل</div>';
+  openModal('memberDetailModal');
+}
+
+function openAddSubModal() {
+  // Populate members
+  api('getMembers', null, {}).then(res => {
+    const members = (res.data || []).filter(m => m.role === 'member');
+    document.getElementById('sub_member').innerHTML = members.map(m => `<option value="${m.id}">${m.full_name}</option>`).join('');
+  });
+  openModal('addSubModal');
+}
+
+async function saveSubscription() {
+  const pass = document.getElementById('sub_pass').value.trim();
+  const month = document.getElementById('sub_month').value.trim();
+  const memberId = document.getElementById('sub_member').value;
+  if (!month) return toast('يرجى إدخال الشهر والسنة', 'error');
+  const res = await api('addSubscription', {
+    admin_password: pass,
+    member_id: memberId,
+    month_year: month,
+    amount: parseFloat(document.getElementById('sub_amount').value) || null,
+    notes: document.getElementById('sub_notes').value,
+    added_by: currentUser.id
+  });
+  if (res.success) { closeModal('addSubModal'); toast('تم تسجيل الدفعة ✅', 'success'); loadSubscription(); }
+  else toast(res.error || 'فشل الحفظ', 'error');
+}
+
+// ── PROFILE ───────────────────────────────────
+async function loadProfile() {
+  const isAdmin = currentUser.role === 'admin';
+  if (isAdmin) {
+    await loadAdminMembers();
+  } else {
+    await loadMemberProfile(currentUser.id, true);
+  }
+}
+
+async function loadMemberProfile(memberId, isSelf = false) {
+  const res = await api('getMember', null, { id: memberId });
+  if (!res.success) return;
+  const m = res.data;
+  const subs = m.subscriptions || [];
+  const lastSub = subs[0];
+
+  let html = `
+    <div class="profile-header">
+      <div class="profile-photo-wrap">
+        ${m.photo_url ?
+          `<img src="${m.photo_url}" class="profile-photo" />` :
+          `<div class="profile-photo-placeholder">${m.full_name.charAt(0)}</div>`}
+        ${isSelf ? `<button class="photo-edit-btn" onclick="openPhotoUpload()">✏️</button>` : ''}
+      </div>
+      <div class="profile-name">${m.full_name}</div>
+      <div class="profile-username">@${m.username} | عضو #${m.member_number || '-'}</div>
+      <div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        <span class="badge ${m.status==='active'?'badge-active':'badge-pending'}">${m.status==='active'?'✅ نشط':'⏳ معلق'}</span>
+        <span class="badge badge-blue">⭐ ${m.points || 0} نقطة</span>
+      </div>
+    </div>`;
+
+  if (m.photo_status === 'pending' && isSelf) {
+    html += `<div class="alert alert-warning">📸 صورتك قيد المراجعة من الإدارة</div>`;
+  }
+
+  html += `<div class="card"><div class="card-title">👤 معلوماتي</div>
+    <div class="info-list">
+      <div class="info-row"><span class="info-label">الاسم</span><span class="info-value">${m.full_name}</span></div>
+      <div class="info-row"><span class="info-label">اسم المستخدم</span><span class="info-value">@${m.username}</span></div>
+      <div class="info-row"><span class="info-label">رقم الهاتف</span><span class="info-value">${m.phone}</span></div>
+      <div class="info-row"><span class="info-label">تاريخ الانضمام</span><span class="info-value">${m.join_date || '-'}</span></div>
+      <div class="info-row"><span class="info-label">الاشتراك الأخير</span><span class="info-value">${lastSub ? lastSub.month_year : 'غير مسجل'}</span></div>
+    </div>
+  </div>`;
+
+  if (!isSelf && currentUser.role === 'admin') {
+    // Admin view: show password, notes, points controls
+    const passRes = await api('getMemberPassword', null, { id: memberId });
+    html += `<div class="card">
+      <div class="card-title">🔐 معلومات إدارية</div>
+      <div class="info-list">
+        <div class="info-row"><span class="info-label">الرمز السري</span><span class="info-value" style="font-family:monospace">${passRes.data || '-'}</span></div>
+        <div class="info-row"><span class="info-label">النقاط</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="info-value">⭐ ${m.points || 0}</span>
+            <button class="btn btn-outline btn-sm" onclick="openAddPoints('${m.id}')">+ إضافة</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+    // Notes
+    const notesRes = await api('getNotes', null, { member_id: memberId });
+    const notes = notesRes.data || [];
+    const noteClasses = { general: 'note-general', positive: 'note-positive', warning: 'note-warning', financial: 'note-financial' };
+    html += `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="card-title" style="margin-bottom:0">📝 الملاحظات الإدارية</div>
+        <button class="btn btn-outline btn-sm" onclick="openAddNote('${m.id}')">+ إضافة</button>
+      </div>
+      ${notes.length ? notes.map(n => `
+        <div class="note-item ${noteClasses[n.note_type] || ''}">
+          ${n.note}
+          <div class="note-meta">${new Date(n.created_at).toLocaleDateString('ar')}</div>
+        </div>`).join('') : '<div style="color:var(--muted);font-size:13px">لا توجد ملاحظات</div>'}
+    </div>`;
+
+    html += `<div style="display:flex;gap:8px;margin-top:8px;">
+      ${m.status === 'active' ?
+        `<button class="btn btn-red btn-sm" onclick="changeMemberStatus('${m.id}','suspended')">🚫 إيقاف</button>` :
+        `<button class="btn btn-green btn-sm" onclick="changeMemberStatus('${m.id}','active')">✅ تفعيل</button>`}
+    </div>`;
+  }
+
+  html += `<button class="btn btn-outline btn-full" style="margin-top:12px" onclick="doLogout()">🚪 تسجيل الخروج</button>`;
+  document.getElementById('profileContent').innerHTML = html;
+}
+
+async function loadAdminMembers() {
+  const res = await api('getMembers', null, {});
+  const members = (res.data || []).filter(m => m.role === 'member');
+
+  let html = `<div class="section-title">👥 قائمة الأعضاء (${members.length})</div>`;
+
+  // Leaderboard
+  const leaders = [...members].sort((a, b) => (b.points || 0) - (a.points || 0)).slice(0, 5);
+  html += `<div class="card"><div class="card-title">🏅 أكثر الأعضاء تفاعلاً</div>
+    ${leaders.map((m, i) => `<div class="leader-item">
+      <div class="leader-rank ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other'}">${i+1}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700">${m.full_name}</div><div style="font-size:12px;color:var(--muted)">@${m.username}</div></div>
+      <div style="font-weight:800;color:var(--primary)">⭐ ${m.points || 0}</div>
+    </div>`).join('')}
+  </div>`;
+
+  html += `<div class="card"><div class="card-title">👥 جميع الأعضاء</div>`;
+  members.forEach(m => {
+    html += `<div class="member-item">
+      <div class="member-ava">${m.photo_url ? `<img src="${m.photo_url}" style="width:44px;height:44px;border-radius:50%;object-fit:cover"/>` : m.full_name.charAt(0)}</div>
+      <div class="member-info">
+        <div class="member-name">${m.full_name}</div>
+        <div class="member-meta">@${m.username} | ⭐${m.points||0}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        <span class="badge ${m.status==='active'?'badge-active':m.status==='pending'?'badge-pending':'badge-rejected'}">${m.status==='active'?'نشط':m.status==='pending'?'معلق':'موقوف'}</span>
+        <button class="btn btn-outline btn-sm" onclick="viewAdminMember('${m.id}')">عرض</button>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+  html += `<button class="btn btn-outline btn-full" style="margin-top:8px" onclick="doLogout()">🚪 تسجيل الخروج</button>`;
+  document.getElementById('profileContent').innerHTML = html;
+}
+
+async function viewAdminMember(memberId) {
+  await loadMemberProfile(memberId, false);
+}
+
+function openAddNote(memberId) {
+  currentNoteTargetId = memberId;
+  document.getElementById('note_text').value = '';
+  openModal('addNoteModal');
+}
+
+async function saveNote() {
+  const note = document.getElementById('note_text').value.trim();
+  if (!note) return toast('يرجى كتابة الملاحظة', 'error');
+  const res = await api('addNote', {
+    member_id: currentNoteTargetId,
+    note,
+    note_type: document.getElementById('note_type').value,
+    created_by: currentUser.id
+  });
+  if (res.success) { closeModal('addNoteModal'); toast('تم حفظ الملاحظة ✅', 'success'); loadMemberProfile(currentNoteTargetId, false); }
+  else toast(res.error || 'فشل الحفظ', 'error');
+}
+
+function openAddPoints(memberId) {
+  currentPointsTargetId = memberId;
+  document.getElementById('points_val').value = '';
+  openModal('addPointsModal');
+}
+
+async function savePoints() {
+  const points = parseInt(document.getElementById('points_val').value);
+  if (!points || points < 1) return toast('يرجى إدخال عدد النقاط', 'error');
+  const res = await api('addPoints', { id: currentPointsTargetId, points });
+  if (res.success) { closeModal('addPointsModal'); toast(`تمت إضافة ${points} نقطة ✅`, 'success'); loadMemberProfile(currentPointsTargetId, false); }
+  else toast(res.error || 'فشل الحفظ', 'error');
+}
+
+async function changeMemberStatus(id, status) {
+  await api('updateMemberStatus', { id, status });
+  toast('تم تحديث الحالة ✅', 'success');
+  loadAdminMembers();
+}
+
+// ── PHOTO UPLOAD ──────────────────────────────
+function openPhotoUpload() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) return toast('حجم الصورة يجب أن يكون أقل من 2MB', 'error');
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const imageData = ev.target.result;
+      toast('جارٍ رفع الصورة...', 'info');
+      const res = await api('uploadPhoto', { id: currentUser.id, imageData });
+      if (res.success) toast('تم رفع الصورة! في انتظار موافقة الإدارة 📸', 'success');
+      else toast(res.error || 'فشل رفع الصورة', 'error');
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+// ── LOGOUT ────────────────────────────────────
+function doLogout() {
+  currentUser = null;
+  document.getElementById('screen-app').classList.remove('active');
+  document.getElementById('screen-login').classList.add('active');
+  backToOptions();
+}
+</script>
+</body>
+</html>
